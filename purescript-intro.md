@@ -1,5 +1,5 @@
 ---
-title: Getting Func-ey 
+title: Getting Func-ey on the Frontend  
 author: Mathew Fournier
 patat:
   theme:
@@ -9,7 +9,13 @@ patat:
     backend: auto
 ...
 
-# INTRO 
+# Goals for today 
+
+- do not panic 
+- understand where this comes from and comparisons to existing JS solutions
+- look at some tooling and enough syntax to understand a basic example 
+- learn a little about statically typed functional programming 
+- be inspired! be curious! it's interesting! it's fun! 
 
 --- 
 
@@ -57,7 +63,7 @@ these in production.
 
 ---
 
-# A peek at react (hooks to be specific)
+# A peek at React (hooks to be specific)
 
 - "In terms of React, the problem was this: classes were the most common form of
    components when expressing the concept of state. *Stateless functional
@@ -77,10 +83,10 @@ these in production.
 If you are going to use a transpiler already, why not go whole-hog and get: 
 
 - typed functional composition (and more w/ HKT) 
-- *MUCH stricter* typing (move more errors from runtime to compile time) 
-- Immutability by default 
-- Compiler that helps you with unidirectional data flow type design 
-- Explicit side effect management (can't mutate state just anywhere, ajax calls
+- referential transparency 
+- MUCH stricter typing (move more errors from runtime to compile time) 
+- immutability by default 
+- explicit side effect management (can't mutate state just anywhere, ajax calls
   become part of your type sig, etc.)
 
 All of this really depends on whether or not statically-typed functional
@@ -88,7 +94,7 @@ programming resonates with you as a way to solve problems.
 
 ---
 
-# another JS example about React's Hook
+# Another JS example about React's Hook
 
 - "The State Hook allows us to use state in React functional components: 
   - This gets us a step closer to using *functional components* over class components.
@@ -107,7 +113,7 @@ from Getting Started w/ React Hooks
 ELM: A delightful language for reliable webapps 
 
 - both a haskell-inspired language AND a UI-framework
-- *great* error messages 
+- great error messages 
 - Lots of resources, way easier to get started 
 - No typeclasses, no higher-kinded types :( 
 - interfacing with JS (aka: FFI) is limited :( 
@@ -115,9 +121,9 @@ ELM: A delightful language for reliable webapps
 PURESCRIPT: A strongly typed functional programming language that compiles to JS 
 
 - more or less a strict version of Haskell 
-- *challenging* error messages :(
+- challenging error messages :(
 - resources harder to understand (need to 'level up' first)  :( 
-- Type-classes, higher-kinded types! 
+- Typeclasses, higher-kinded types! 
 - Multiple UI frameworks (some wrap react, some do their own thing) :( 
 - interfacing with JS (FFI) is fantastic 
 
@@ -136,7 +142,7 @@ function getGreeting(user) {
 }
 ```
 
-(show web examples)
+[show web examples](https://gist.github.com/matfournier/245adc2daf5e20172d3a5ad086a6f0eb)
 
 --- 
 
@@ -273,11 +279,10 @@ So what's this semiring? Well obviously it's an additive commutative monoid with
 identity zero (uhhhhhhhh......). For instance, the set of natural numbers (including zero)
 under addition or multiplication forms a semiring. 
 
-- it's not important
-- but where is this Semiring thing coming from anyways? 
-- *Semiring* is a defined *typeclass* and that *addInt* will work for any type
-  that implements Semiring.
-  - think of it like an interface constraint. We'll cover typeclasses later.
+- it's not important, but you can look it up. 
+- if your type implements the `semiring` typeclass (interface), you get `(+)`
+  for free 
+- q: does it work for *string* ? 
 
 ---
 
@@ -373,7 +378,7 @@ We have *SUM* types and *PRODUCT* types
 - *PRODUCT TYPES*: what every other language generally has 
   - e.g. `case class (x: Int, y: String)`:
     - cardinality is Int x String 
-    - so 2^16 x Infinity? 
+    - so 2^32 x Infinity? 
 
 ---
 
@@ -410,7 +415,7 @@ case class Minutes(minutes: Int)
 
 ---
 
-### Anatomy of a data type 
+# Anatomy of a data type 
 
 ```
     type constructor
@@ -425,8 +430,8 @@ data Minutes = Minutes Int
   - this means your data can also be partially applied and is _curried_ 
 - the type constructor and data constructor don't have to be the same 
 - `data Minutes' = Doggo Int` 
-  - What is the type of Minutes' ?
-  - What is the kinds of Minutes' ? (`:k`)
+  - What is the type of Minutes' ? of Doggo?
+  - What is the kinds of Minutes' ? (`:k`) of Doggo?
 
 ---
 
@@ -714,7 +719,48 @@ sumOfElementsIsBalanced xs = case sum xs of
 
 ---
 
+# The basic model to use this in the browser
+
+The basic model of how this works for a SPA is breaking everything into three
+parts: 
+
+- *(1) Model* - the state of your application
+- *(2) Update* - a way to update your state 
+- *(3) View* - a way to view your state as HTML 
+
+Generally we build up a description of what the program shuld do in response to
+various inputs.
+
+---
+
+# Basics of the function to html syntax 
+
+This is slightly different depending on the language / framework but generally: 
+
+```html
+<button class = "funky" id = "submitted"> Submit </button>
+  |           |             |               |
+  type     attribute      attribute       some child text 
+```
+
+```haskell
+node "button" [ class "funky", id "submitter"] [text "Submit"]
+--    |             |              |                 |
+--   type         attribute      attribute        some child text 
+
+-- instead of < and /> everywhere we have [ ] 
+```
+
+But we are describing our page in functions! 
+
+- we can refactor repetive code, put things in loops, map over things, call these functions in test frameworks, etc. 
+
+---
+
 # Next time 
+
+This was a whirlwind tour!  Hopefully this gives you enough of a reference to
+get started and has interested you to play around with this a little. 
 
 - We can either do
   - typeclasses! 
@@ -724,6 +770,7 @@ sumOfElementsIsBalanced xs = case sum xs of
 - Or throw caution to the wind and make an app ? 
 
 Homework: check this stuff out. Poke around some blogs. Look at some tutorials.
+Watch some videos. The creator of elm is a great speaker. 
 
 ---
 
@@ -761,17 +808,19 @@ Lots of the functional stuff is available in Scala!
 - Scala With Cats (awesome, awesome, awesome) 
 - Scalaz for mere mortals (not a good intro book) 
 - FP in Scala (lukewarm recommendation depending on what you want to do)
+- this amazing video by [Rob Norris](https://www.youtube.com/watch?v=30q6BkBv5MY) on programming with effects
+
+---
 
 ## Javascript 
 
 Lots of functional JS floating around 
 
-- Professor Frisby introduces Composable Functional JavaScript course on
-EggHead.io
-   - hilarious puppet teaches JS? I don't know how to describe it. The content
-     is actually amazing and you can get through it in a weekend. This is
-     immediately useful to your JS day life. 
+* Professor Frisby introduces Composable Functional JavaScript course on EggHead.io
+  * hilarious puppet teaches JS? I don't know how to describe it. The content is actually amazing and you can get through it in a weekend. This is immediately useful to your JS day life. 
+  * [you've been using functors](https://egghead.io/lessons/javascript-you-ve-been-using-functors)
+
 - Professor Frisby's Mostly Adequate Guide to Functional Programming 
 - Fantasy-land / Santuary libraries 
 - Flutures 
-   - Fantasy land compliant (monadic) alternative to Promises 
+  - Fantasy land compliant (monadic) alternative to Promises 
