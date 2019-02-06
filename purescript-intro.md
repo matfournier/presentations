@@ -83,7 +83,7 @@ these in production.
 If you are going to use a transpiler already, why not go whole-hog and get: 
 
 - typed functional composition (and more w/ HKT) 
-- referential transparency 
+- referential transparency (functions / "programs" as values)
 - MUCH stricter typing (move more errors from runtime to compile time) 
 - immutability by default 
 - explicit side effect management (can't mutate state just anywhere, ajax calls
@@ -94,17 +94,18 @@ programming resonates with you as a way to solve problems.
 
 ---
 
-# Another JS example about React's Hook
+# ASIDE: WHAT DO WE DO AS SOFTWARE PEEPS 
 
-- "The State Hook allows us to use state in React functional components: 
-  - This gets us a step closer to using *functional components* over class components.
-  - React Effects Hooks are similar to componentDidMount, componentDidUpdate, and componentWillUnmount
-  - This is what the Effect Hook is for. Side-effects are things you want your application to make like:
-    - Fetching data
-    - Manually changing the DOM (document title)
-    - Setting up a subscription"
- 
-from Getting Started w/ React Hooks 
+Our main goal isn't "to scala", or "to write OOP", it's to build out a product
+    that people will give $ for. To avoid spending more than we are making, it's
+    our job to write: 
+
+* Code that works reliably, even in parts of the application that aren’t used very often.
+* Code that can be easily understood by other people (I won’t be around forever).
+* Code that is factored in such a way as to minimize the cost of changing it (because if one thing is certain, it’s that requirements never stop changing).
+
+Particularly the second point in relevant here. These abstractions aren't so
+common (but growing!), what will our abstractions look like in 5, 10 years? 
 
 ---
 
@@ -153,23 +154,6 @@ function getGreeting(user) {
 - everything is a *function*
 - everything is *immutable* 
 
-```haskell
-f :: Int -> Int 
-f x = x + 1 
-
-let a = 3 in 
-    a := a + 1  -- compiler error 
-```
-
----
-
-# Purescript - everything is an expression
-
-```haskell
-
-let a = if someBool then 1 else 0 in 
-    a + (let b = 2 in b) 
-```
 ---
 
 # Purescript - No side-effects!? 
@@ -193,7 +177,7 @@ foo x = show (x + 1)  -- we get back a string, but we haven't printed to console
 
 So it's no side-effects, *unless explicitly stated*
 - once you are in a side-effect you can't get out until you deal with the
-  potential for failure 
+  potential for failure
 - this is why there are so many things like monad/functor/etc. for dealing with
   "something in a context", in our case IO, that make doing this easy. 
 
@@ -276,8 +260,7 @@ forall a. Semiring a => a -> a -> a
 ```
 
 So what's this semiring? Well obviously it's an additive commutative monoid with
-identity zero (uhhhhhhhh......). For instance, the set of natural numbers (including zero)
-under addition or multiplication forms a semiring. 
+identity zero (uhhhhhhhh......). 
 
 - it's not important, but you can look it up. 
 - if your type implements the `semiring` typeclass (interface), you get `(+)`
@@ -341,6 +324,7 @@ But this just aliasing for readability. The type of urlComponents is still
 ---
 
 Other examples:
+
 ```haskell
 > type Point = {x :: Number, y :: Number}
 > :paste
@@ -361,8 +345,8 @@ defining a type alias like *Point* doesn't let us really construct a point thoug
 e.g.
 
 ```haskell 
-> PointRec {x: 0.0, y: 0.0}
--- error: Unknown data constructor PointRec
+> Point {x: 0.0, y: 0.0}
+-- error: Unknown data constructor Point
 ```
 
 ---
@@ -385,7 +369,7 @@ We have *SUM* types and *PRODUCT* types
 # Data immutable
 
 - No methods, just data 
-- No modifiers, no annotations 
+- No modifiers, no annotations / decorators  
 - No default parameters 
 - No private members 
 
@@ -396,7 +380,7 @@ What's left? *CONSTRUCTORS*
 # The data Keyword
 
 - `data None = None` a sum type with a single member  
-- `date MyBool = TRUE | FALSE` a sum type with two members. Compared to scala: 
+- `data MyBool = TRUE | FALSE` a sum type with two members. Compared to scala: 
 
 ```scala
 // in scala 
@@ -475,7 +459,7 @@ newtype PhoneNumber = PhoneNumber String
 - newtype gives us type safety _without_ runtime overhead of a function call
   (unlike Data)
 
---- Newtype 
+---  
 
 # Newttype JS 
 
@@ -497,9 +481,13 @@ var DataPhoneNumber = (function () {
   })();
 ```
 
+If you are writing something that will be used via regular JS, there is
+additional syntax you can use to make it more performant for export (but
+internally more annoying for use). 
+
 ---
 
-# The almighty "data" keyword
+# The almighty "data" keyword - record syntax 
 
 ```haskell 
 data Point = Point 
@@ -508,7 +496,9 @@ data Point = Point
   }
 ```
 
-# Deriving common typeclasses  
+Records in purescript are way better than records in Haskell
+
+# Deriving common typeclasses - aka why can't I ever see the types I make 
 
 - the story here isn't as nice as haskell
 
@@ -526,7 +516,9 @@ print, etc.
 In haskell you can just do this 
 
 ```haskell
-data Minutes = Minutes Int deriving (Show, Eq)
+> data Minutes = Minutes Int deriving (Show, Eq)
+> Minutes 10 
+Minutes 10 
 ```
 
 ---
@@ -550,6 +542,8 @@ note: `<>` is more or less a generic *concat* (go look at it's type like this
 `:t (<>)` since it's an infix operator)
 
 --- 
+
+# Deriving in purescript 
 
 Or via this more clunky deriveGeneric 
 
@@ -593,7 +587,7 @@ Minutes 30
 
 ---
 
-# Data desconstruction
+# Data desconstruction - record syntax
 
 ```haskell
 import Data.Tuple 
@@ -766,7 +760,7 @@ get started and has interested you to play around with this a little.
   - typeclasses! 
   - functors, applicatives, monads, do notation! 
   - What the hell do `$ , <$>, <*>, >>=` mean anyways?
-
+  - why do I keep soing the word `do`
 - Or throw caution to the wind and make an app ? 
 
 Homework: check this stuff out. Poke around some blogs. Look at some tutorials.
