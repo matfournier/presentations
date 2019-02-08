@@ -19,7 +19,7 @@ patat:
 
 --- 
 
-# YOU ALREADY DON'T WRITE JAVASCRIPT 
+# You already don't write legit JS 
 
 You probably already *dont* write legit javascript:
   - run your code through babel? basically transpiling 
@@ -28,7 +28,7 @@ You probably already *dont* write legit javascript:
     
 ---
 
-# JS IS PRETTY FUNCTIONAL ALREADY
+# JS is pretty functional already
 
 But isn't javascript functional already?  Depends on your definition of
 functional, but yes: 
@@ -48,7 +48,7 @@ programming*
 
 ---
 
-# RICH ECOSYSTEM OF TRANSPILED JS LANGS:w
+# Rich ecosystem of functional to javascript languages 
 
 
 The functional ones tend to come from an ML lineage and look the same in the
@@ -78,7 +78,7 @@ these in production.
 
 ---
 
-# WHY STATICALLY TYPED FUNCTIONAL JS
+# Why statically typed front-end? 
 
 If you are going to use a transpiler already, why not go whole-hog and get: 
 
@@ -92,20 +92,7 @@ If you are going to use a transpiler already, why not go whole-hog and get:
 All of this really depends on whether or not statically-typed functional
 programming resonates with you as a way to solve problems.
 
----
-
-# ASIDE: WHAT DO WE DO AS SOFTWARE PEEPS 
-
-Our main goal isn't "to scala", or "to write OOP", it's to build out a product
-    that people will give $ for. To avoid spending more than we are making, it's
-    our job to write: 
-
-* Code that works reliably, even in parts of the application that aren’t used very often.
-* Code that can be easily understood by other people (I won’t be around forever).
-* Code that is factored in such a way as to minimize the cost of changing it (because if one thing is certain, it’s that requirements never stop changing).
-
-Particularly the second point in relevant here. These abstractions aren't so
-common (but growing!), what will our abstractions look like in 5, 10 years? 
+- drawbacks
 
 ---
 
@@ -118,6 +105,7 @@ ELM: A delightful language for reliable webapps
 - Lots of resources, way easier to get started 
 - No typeclasses, no higher-kinded types :( 
 - interfacing with JS (aka: FFI) is limited :( 
+- no observables :( 
 
 PURESCRIPT: A strongly typed functional programming language that compiles to JS 
 
@@ -127,6 +115,7 @@ PURESCRIPT: A strongly typed functional programming language that compiles to JS
 - Typeclasses, higher-kinded types! 
 - Multiple UI frameworks (some wrap react, some do their own thing) :( 
 - interfacing with JS (FFI) is fantastic 
+- several ways to do observables :) 
 
 --- 
 
@@ -156,7 +145,7 @@ function getGreeting(user) {
 
 ---
 
-# Purescript - No side-effects!? 
+# PureScript - Remember: No side-effects!? 
 
 ```haskell
 
@@ -173,6 +162,10 @@ foo x = print (x + 1)  -- will get an error!
 foo :: Int -> String
 foo x = show (x + 1)  -- we get back a string, but we haven't printed to console 
 
+
+getUserInput :: IO String -- I don't get back a string, I get a string stuffed
+                          -- stuffed in an IO 
+                          
 ```
 
 So it's no side-effects, *unless explicitly stated*
@@ -180,6 +173,18 @@ So it's no side-effects, *unless explicitly stated*
   potential for failure
 - this is why there are so many things like monad/functor/etc. for dealing with
   "something in a context", in our case IO, that make doing this easy. 
+
+---
+
+# PureScript - Effects
+
+```haskell
+
+main :: forall e. Eff (console :: CONSOLE, exception :: EXCEPTION, fs :: FS | e) Unit
+main = do
+  log =<< readTextFile UTF8 "input.json"
+
+```
 
 ---
 
@@ -369,7 +374,7 @@ We have *SUM* types and *PRODUCT* types
 # Data immutable
 
 - No methods, just data 
-- No modifiers, no annotations / decorators  
+- No modifiers, no annotations / decorators
 - No default parameters 
 - No private members 
 
@@ -416,6 +421,42 @@ data Minutes = Minutes Int
 - `data Minutes' = Doggo Int` 
   - What is the type of Minutes' ? of Doggo?
   - What is the kinds of Minutes' ? (`:k`) of Doggo?
+
+---
+
+# Currying - information hiding 
+
+Currying is a useful way to do code re-use AND information hiding 
+
+```scala
+//scala
+class DbQueryingThinger(private val dbHandler: DbHandler) {
+
+ def query(sql: SqlQuery): JDBCResultThing {..}
+}
+
+val invoiceSystemQuery = new DbQuerything(invoiceDBHandler) 
+
+```
+we can pass along the *invoiceSystemQuery* object instance w/o having to pass around
+the dbHandler to the consumers, it's held on by the object, so they can't query
+the wrong system or forget to pass it in. 
+
+```haskell
+--purescript/haskell 
+
+query :: DbHandler -> SqlQuery -> ResultThing 
+query db sql = ... 
+
+someQuerySystemDbHandler :: DbHandler  --some instance we keep private 
+
+invoiceQuerySystem :: SqlQuery -> ResultThing 
+invoiceQueryStem = query someQuerySystemDbHandler
+
+```
+
+There is no way for the db handler to leak to the consumer. We have achieved the
+same idea as the class based approach. 
 
 ---
 
@@ -494,9 +535,21 @@ data Point = Point
   { x :: Number
   , y :: Number
   }
+  
+-- functions are values, so they can be in records as well
+
+data Thing = Thing 
+  { x :: Number
+  , y :: Number
+  , blah :: Number -> String -> Number}
+  }
 ```
 
-Records in purescript are way better than records in Haskell
+These more or less are represented javascript objects under the hood 
+Records in purescript are way better than records in Haskell (don't have to
+worry about function name collision)
+
+---
 
 # Deriving common typeclasses - aka why can't I ever see the types I make 
 
@@ -523,11 +576,13 @@ Minutes 10
 
 ---
 
-# Deriving in purescript 
+# Deriving in purescript - show 
 
-But in purescript we either have to implement it by hand
+Like python's `__repl__` magic function on a class, in order to be printed in
+the repl the data type has to implement the `show` interface.  
 
-Much boilerplate, so wow :( 
+The Deriving story isn't as nice in Purescript as it is in Haskell. So we do it
+by hand 
 
 ```haskell
 -- give an instance of the typeclass Show for Option provided 
@@ -536,6 +591,8 @@ Much boilerplate, so wow :(
 instance showOption :: Show a => Show (Option a) where
   show (Some a) = "(Some " <> show a <> ")"
   show Nothing  = "Nothing"
+  
+-- much boilerplate, so wow :( 
 ```
 
 note: `<>` is more or less a generic *concat* (go look at it's type like this
@@ -567,10 +624,10 @@ Some [1,2,3]
 
 ---
 
-
 # Data desconstruction
 
-- we unapply in the function and make a new Minutes  (we never mutate in place)
+- we unapply in the function declaration on the left of the expression
+- we return a new Minutes  (we never mutate in place)
 ```haskell
 data Minutes = Minutes Int 
 
