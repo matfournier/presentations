@@ -814,10 +814,10 @@ This was a whirlwind tour!  Hopefully this gives you enough of a reference to
 get started and has interested you to play around with this a little. 
 
 - We can either do
-  - typeclasses! 
-  - functors, applicatives, monads, do notation! 
-  - What the hell do `$ , <$>, <*>, >>=` mean anyways?
-  - why do I keep soing the word `do`
+    - typeclasses! 
+    - functors, applicatives, monads, do notation! 
+    - What the hell do `$ , <$>, <*>, >>=` mean anyways?
+    - why do I keep soing the word `do`
 - Or throw caution to the wind and make an app ? 
 
 Homework: check this stuff out. Poke around some blogs. Look at some tutorials.
