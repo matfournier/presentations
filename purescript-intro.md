@@ -816,7 +816,7 @@ get started and has interested you to play around with this a little.
 - We can either do
     - typeclasses! 
     - functors, applicatives, monads, do notation! 
-    - What the hell do `$ , <$>, <*>, >>=` mean anyways?
+    - What the hell do `$ , <$>, <*>, >>=, <<<, >>>` mean anyways?
     - why do I keep soing the word `do`
 - Or throw caution to the wind and make an app ? 
 
